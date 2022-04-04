@@ -1,6 +1,7 @@
 package main;
 
 import main.data.GetData;
+import main.word.WriteToDocument;
 
 import java.io.*;
 import java.util.*;
@@ -25,7 +26,6 @@ public class Main {
 */
     public void ask(){
 
-        GetData getData = new GetData();
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("What would you like to do?");
@@ -41,6 +41,7 @@ public class Main {
             System.out.println("Who would you like to get the average off: ");
             String person = scanner.nextLine();
 
+            GetData getData = new GetData();
             try {
 
                 getData.loadSite(person);
@@ -53,19 +54,28 @@ public class Main {
 
         } else if(function.equalsIgnoreCase("exit")){
             System.exit(1);
+        } else if(function.equalsIgnoreCase("doc")){
+            new WriteToDocument(scoreList);
         } else {
             System.out.println("Unknown function, please try again");
             ask();
         }
     }
 
+    private void getAverage(String person, Scanner s){
+
+
+
+    }
+
     public void sort(){
         scoreList.sort(Comparator.comparing(this::extractDouble));
         System.out.println(scoreList);
+        ask();
     }
 
     double extractDouble(String s) {
-        String num = s.replaceAll("[^\\d.]", "");
+        String num = s.replaceAll("^[^:]*:", "");
         // return 0 if no digits found
         return num.isEmpty() ? 0 : Double.parseDouble(num);
     }
