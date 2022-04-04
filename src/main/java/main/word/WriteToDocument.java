@@ -3,7 +3,6 @@ package main.word;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
-import org.jsoup.internal.NonnullByDefault;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -53,6 +52,7 @@ public class WriteToDocument {
                     fourth.setColor("00CC00");
                     fourth.setText(counter + ": " + scores.get(i-1));
                     fourth.addBreak();
+                    counter++;
                 }
 
                 System.out.println(counter);
