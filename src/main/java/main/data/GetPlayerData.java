@@ -8,17 +8,17 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class GetData {
+public class GetPlayerData {
 
     Main main = new Main("url");
 
     private int[] scores = new int[50];
+
+    public GetPlayerData(){}
 
     public void loadSite(String url) throws IOException {
         try {
@@ -32,14 +32,32 @@ public class GetData {
 
     private void getUrl(String url, Document d)  {
 
+        getAverages(d);
+
+        main.printAverage(url, scores);
+
+        setScores(scores);
+    }
+
+    public int[] getAverages(Document d){
         int[] scores = new int[50];
         int arrayCounter = 0;
 
+        int mccNum = 0;
+
         Elements rows = d.select("tr");
 
-            for (Element row : rows) {
-                Elements columns = row.select("td");
+        for (Element row : rows) {
+            Elements columns = row.select("td");
 
+            String text = row.text();
+            text = text.replace("*", "");
+            String[] splitter = text.split(" ");
+            if(splitter[0] != null && splitter[0].equalsIgnoreCase("mc")) {
+                mccNum = Integer.parseInt(splitter[2]);
+            }
+
+            if(mccNum >= 14) {
                 for (Element column : columns) {
                     if (row.text().contains("Special Events") || row.text().equals("")) {
                         break;
@@ -103,12 +121,12 @@ public class GetData {
                         } catch (StringIndexOutOfBoundsException e) {
                             e.getSuppressed();
                         }
-                    } catch (NumberFormatException e){
+                    } catch (NumberFormatException e) {
 
                         List<Integer> list = IntStream.of(scores).boxed().collect(Collectors.toList());
 
                         int i = list.size();
-                        list.remove(i-1);
+                        list.remove(i - 1);
                         scores = list.stream().mapToInt(Integer::intValue).toArray();
                     }
                 }
@@ -116,13 +134,11 @@ public class GetData {
                 if (row.text().contains("Special Events") || row.text().equals("")) {
                     break;
                 }
-
             }
-            main.printAverage(url, scores);
-
-            setScores(scores);
         }
 
+        return scores;
+    }
 
     public void setScores(int[] scores){
         this.scores = scores;

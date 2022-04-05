@@ -1,6 +1,7 @@
 package main;
 
-import main.data.GetData;
+import main.data.GetPlayerData;
+import main.data.GetTeamData;
 import main.word.WriteToDocument;
 
 import java.io.*;
@@ -17,13 +18,7 @@ public class Main {
     public Main(String useless){
         //Dummy lmao
     }
-/*
-    private void init(){
 
-        Scanner scanner = new Scanner(System.in);
-
-    }
-*/
     public void ask(){
 
         Scanner scanner = new Scanner(System.in);
@@ -41,7 +36,7 @@ public class Main {
             System.out.println("Who would you like to get the average off: ");
             String person = scanner.nextLine();
 
-            GetData getData = new GetData();
+            GetPlayerData getData = new GetPlayerData();
             try {
 
                 getData.loadSite(person);
@@ -53,19 +48,26 @@ public class Main {
             }
 
         } else if(function.equalsIgnoreCase("exit")){
-            System.exit(1);
+            System.exit(0);
         } else if(function.equalsIgnoreCase("doc")){
             new WriteToDocument(scoreList);
+        } else if(function.equalsIgnoreCase("mcc")){
+
+            System.out.println("Which mcc: ");
+            String mcc = scanner.nextLine();
+
+            GetTeamData team = new GetTeamData();
+
+            try {
+                team.loadSite(mcc);
+            } catch (IOException e){
+                e.printStackTrace();
+            }
+
         } else {
             System.out.println("Unknown function, please try again");
             ask();
         }
-    }
-
-    private void getAverage(String person, Scanner s){
-
-
-
     }
 
     public void sort(){
@@ -81,7 +83,11 @@ public class Main {
     }
 
     public void printAverage(String name, int[] scores){
+        calculateAverage(scores, name);
+        ask();
+    }
 
+    public void calculateAverage(int[] scores, String name){
         int avg = 0;
         int counter = 0;
         int thisMustBeHereCauseWeird = 0;
@@ -99,7 +105,6 @@ public class Main {
         System.out.println("The average of " + name + " is: " + avg + "\n");
         scoreList.add(name + ": " + avg);
         System.out.println(scoreList.toString());
-        ask();
     }
 
     public static void main(String[] main) {
