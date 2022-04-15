@@ -20,26 +20,26 @@ public class GetPlayerData {
 
     public GetPlayerData(){}
 
-    public void loadSite(String url) throws IOException {
+    public void loadSite(String url, int num) throws IOException {
         try {
             Document doc = Jsoup.connect("https://mcchampionship.fandom.com/wiki/" + url).get();
-            getUrl(url, doc);
+            getUrl(url, doc, num);
         } catch(HttpStatusException e) {
             System.out.println("That person cannot be found on the wiki! Check capitalisation and whether they are a current participant.");
             main.ask();
         }
     }
 
-    private void getUrl(String url, Document d)  {
+    private void getUrl(String url, Document d, int num)  {
 
-        getAverages(d);
+        getAverages(d, num);
 
         main.printAverage(url, scores);
 
         setScores(scores);
     }
 
-    public int[] getAverages(Document d){
+    public int[] getAverages(Document d, int num){
         int[] scores = new int[50];
         int arrayCounter = 0;
 
@@ -50,6 +50,7 @@ public class GetPlayerData {
         for (Element row : rows) {
             Elements columns = row.select("td");
 
+            //Splitting to check mcc number, where to stop is specified in main
             String text = row.text();
             text = text.replace("*", "");
             String[] splitter = text.split(" ");
@@ -57,8 +58,9 @@ public class GetPlayerData {
                 mccNum = Integer.parseInt(splitter[2]);
             }
 
-            if(mccNum >= 14) {
-                for (Element column : columns) {
+            if(mccNum >= num) {
+                for (Element ignored : columns) {
+                    //If the reader is where the values stop, break
                     if (row.text().contains("Special Events") || row.text().equals("")) {
                         break;
                     }
@@ -67,6 +69,7 @@ public class GetPlayerData {
 
                         int count1 = 0, count2 = 0;
 
+                        //Find the location in the string where the first ) is (its a very long string)
                         for (char character : counter) {
                             if (character == ')') {
                                 break;
@@ -77,6 +80,7 @@ public class GetPlayerData {
                         String removed;
 
                         try {
+                            //Isolate the number by itself, this is done like this as the number is the second number in the string and the number can be either 3 digits or 4 digits
                             removed = columns.text().substring(count2 + 1);
                             counter = removed.toCharArray();
 
@@ -98,6 +102,7 @@ public class GetPlayerData {
 
                             String score = removed.substring(count1, count2).replace("(", "").replace(",", "");
 
+                            //Add the specific score to an array
                             if (arrayCounter > 1) {
                                 if (!score.equals(String.valueOf(scores[arrayCounter - 1]))) {
                                     try {
@@ -105,6 +110,7 @@ public class GetPlayerData {
                                         arrayCounter++;
 
                                     } catch (NumberFormatException e) {
+                                        //Dunno why this happens lmfao
                                         System.out.println("This is to indicate an error, but im lazy so oh well thing works");
                                     }
                                 }
@@ -113,8 +119,8 @@ public class GetPlayerData {
                                 arrayCounter++;
                             }
 
-                            //@ToDo System.out.println(score + " " + scores[mainCounter] + " " + (score.equals(String.valueOf(scores[mainCounter]))));
 
+                            //Check the break again
                             if (row.text().contains("Special Events")) {
                                 break;
                             }
@@ -123,6 +129,7 @@ public class GetPlayerData {
                         }
                     } catch (NumberFormatException e) {
 
+                        //Remove any 0's that were added to the end of the list
                         List<Integer> list = IntStream.of(scores).boxed().collect(Collectors.toList());
 
                         int i = list.size();
@@ -142,10 +149,6 @@ public class GetPlayerData {
 
     public void setScores(int[] scores){
         this.scores = scores;
-    }
-
-    public int[] getScores(){
-        return scores;
     }
 
 }

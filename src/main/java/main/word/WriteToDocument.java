@@ -26,7 +26,7 @@ public class WriteToDocument {
 
         int counter = 1;
 
-        try(OutputStream output = new FileOutputStream("test.docx")){
+        try(OutputStream output = new FileOutputStream("Mcc Teams.docx")){
             XWPFParagraph para = d.createParagraph();
             XWPFRun first = para.createRun();
             XWPFRun second = para.createRun();
@@ -50,13 +50,12 @@ public class WriteToDocument {
                     counter++;
                 } else {
                     fourth.setColor("00CC00");
-                    fourth.setText(counter + ": " + scores.get(i-1));
+
+                    fourth.setText(counter + ": " + scores.get(i - 1));
+
                     fourth.addBreak();
                     counter++;
                 }
-
-                System.out.println(counter);
-
 
             }
             d.write(output);
